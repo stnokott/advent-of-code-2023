@@ -21,6 +21,5 @@ jobs:
       - uses: stefanzweifel/git-auto-commit-action@v5 # use v5
         with:
           commit_message: Update README stars
-          push_options: '--force'
           branch: main
           create_branch: false
