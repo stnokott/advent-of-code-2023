@@ -1,0 +1,36 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Solve Day",
+			"type": "process",
+			"command": "go",
+			"args": [
+				"run",
+				"./solutions/day${input:day}/day${input:day}.go"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"icon": {
+				"id": "light-bulb",
+				"color": "terminal.ansiGreen"
+			},
+			"problemMatcher": "$go",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "dedicated"
+			}
+		}
+	],
+	"inputs": [
+		{
+			"id": "day",
+			"type": "promptString",
+			"default": "1",
+			"description": "Day as number"
+		}
+	]
+}
