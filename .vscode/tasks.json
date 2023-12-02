@@ -7,10 +7,10 @@
 			"command": "go",
 			"args": [
 				"run",
-				"./solutions/day${input:day}/day${input:day}.go"
+				"${workspaceFolder}/solutions/day${input:day}/day${input:day}.go"
 			],
 			"options": {
-				"cwd": "${workspaceFolder}"
+				"cwd": "${workspaceFolder}/solutions/day${input:day}"
 			},
 			"icon": {
 				"id": "light-bulb",
