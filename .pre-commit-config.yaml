@@ -1,0 +1,21 @@
+fail_fast: true
+repos:
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.27.2
+    hooks:
+      - id: check-github-workflows
+  - repo: local
+    hooks:
+      - id: go-test
+        name: go-test
+        description: Runs tests on all changed .go files
+        language: golang
+        files: '\.go$'
+        exclude: '_test\.go$'
+        types: [file]
+        entry: go test ./...
+        pass_filenames: false
+  - repo: https://github.com/golangci/golangci-lint
+    rev: v1.55.2
+    hooks:
+      - id: golangci-lint
