@@ -6,6 +6,46 @@ import (
 	"testing"
 )
 
+func TestSetHasSubset(t *testing.T) {
+	tests := []struct {
+		name string
+		s    Set
+		s2   Set
+		want bool
+	}{
+		{"equal", Set{R: 1, G: 2, B: 3}, Set{R: 1, G: 2, B: 3}, true},
+		{"one too low", Set{R: 1, G: 2, B: 3}, Set{R: 2, G: 2, B: 3}, false},
+		{"all higher", Set{R: 11, G: 22, B: 33}, Set{R: 1, G: 2, B: 3}, true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.s.HasSubset(tt.s2); got != tt.want {
+				t.Errorf("Set.HasSubset() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGameHasSubset(t *testing.T) {
+	tests := []struct {
+		name string
+		g    Game
+		set  Set
+		want bool
+	}{
+		{"equal", Game{Sets: []Set{{R: 1, G: 2, B: 3}}}, Set{R: 1, G: 2, B: 3}, true},
+		{"is subset", Game{Sets: []Set{{R: 2, G: 4, B: 6}}}, Set{R: 3, G: 10, B: 11}, true},
+		{"is not subset", Game{Sets: []Set{{R: 2, G: 4, B: 6}}}, Set{R: 3, G: 10, B: 5}, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.g.HasSubset(tt.set); got != tt.want {
+				t.Errorf("Game.HasSubset() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestNewGame(t *testing.T) {
 	tests := []struct {
 		name string
@@ -87,47 +127,7 @@ func TestParseColor(t *testing.T) {
 	}
 }
 
-func TestSetHasSubset(t *testing.T) {
-	tests := []struct {
-		name string
-		s    *Set
-		s2   Set
-		want bool
-	}{
-		{"equal", &Set{R: 1, G: 2, B: 3}, Set{R: 1, G: 2, B: 3}, true},
-		{"one too low", &Set{R: 1, G: 2, B: 3}, Set{R: 2, G: 2, B: 3}, false},
-		{"all higher", &Set{R: 11, G: 22, B: 33}, Set{R: 1, G: 2, B: 3}, true},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.s.HasSubset(tt.s2); got != tt.want {
-				t.Errorf("Set.HasSubset() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestGameHasSubset(t *testing.T) {
-	tests := []struct {
-		name string
-		g    Game
-		set  Set
-		want bool
-	}{
-		{"equal", Game{Sets: []Set{{R: 1, G: 2, B: 3}}}, Set{R: 1, G: 2, B: 3}, true},
-		{"is subset", Game{Sets: []Set{{R: 2, G: 4, B: 6}}}, Set{R: 3, G: 10, B: 11}, true},
-		{"is not subset", Game{Sets: []Set{{R: 2, G: 4, B: 6}}}, Set{R: 3, G: 10, B: 5}, false},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.g.HasSubset(tt.set); got != tt.want {
-				t.Errorf("Game.HasSubset() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestSolve(t *testing.T) {
+func TestSolveDay1(t *testing.T) {
 	type args struct {
 		scenario Set
 		games    []string
@@ -172,7 +172,7 @@ func TestSolve(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := solve(tt.args.scenario, tt.args.games...); got != tt.want {
+			if got := solveDay1(tt.args.scenario, tt.args.games...); got != tt.want {
 				t.Errorf("solve() = %v, want %v", got, tt.want)
 			}
 		})

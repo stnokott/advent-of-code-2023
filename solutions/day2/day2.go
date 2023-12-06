@@ -14,11 +14,42 @@ type Set struct {
 	R, G, B int
 }
 
+// HasSubset returns true if d is a complete subset of this set.
+func (s Set) HasSubset(s2 Set) bool {
+	return s.R >= s2.R && s.G >= s2.G && s.B >= s2.B
+}
+
+// Power it the number of each color multiplied together
+func (s Set) Power() int {
+	return s.R * s.G * s.B
+}
+
 // Game contains its ID and the list of sets in this game.
 // Use NewGame() to construct an instance from a string.
 type Game struct {
 	ID   int
 	Sets []Set
+}
+
+// HasSubset returns true if the passed set is a subset of all sets in this game.
+func (g Game) HasSubset(set Set) bool {
+	for _, s := range g.Sets {
+		if !set.HasSubset(s) {
+			return false
+		}
+	}
+	return true
+}
+
+// MinPossibleSet returns the smallest set (by cube count) for which this game would be possible.
+func (g Game) MinPossibleSet() Set {
+	s := Set{} // init with 0,0,0
+	for _, gameSet := range g.Sets {
+		s.R = max(s.R, gameSet.R)
+		s.G = max(s.G, gameSet.G)
+		s.B = max(s.B, gameSet.B)
+	}
+	return s
 }
 
 // NewGame creates a new Game instance from an input string.
@@ -110,28 +141,23 @@ func parseColor(str string) (n int, c Color) {
 	return
 }
 
-// HasSubset returns true if d is a complete subset of this set.
-func (s *Set) HasSubset(s2 Set) bool {
-	return s.R >= s2.R && s.G >= s2.G && s.B >= s2.B
-}
-
-// HasSubset returns true if the passed set is a subset of all sets in this game.
-func (g Game) HasSubset(set Set) bool {
-	for _, s := range g.Sets {
-		if !set.HasSubset(s) {
-			return false
-		}
-	}
-	return true
-}
-
-func solve(scenario Set, games ...string) int {
+func solveDay1(scenario Set, games ...string) int {
 	x := 0
 	for _, gameStr := range games {
 		game := NewGame(gameStr)
 		if game.HasSubset(scenario) {
 			x += game.ID
 		}
+	}
+	return x
+}
+
+func solveDay2(games ...string) int {
+	x := 0
+	for _, gameStr := range games {
+		game := NewGame(gameStr)
+		minSet := game.MinPossibleSet()
+		x += minSet.Power()
 	}
 	return x
 }
@@ -143,6 +169,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	sum := solve(scenario, lines...)
-	fmt.Println("sum:", sum)
+	sum := solveDay1(scenario, lines...)
+	fmt.Println("(1) sum of possible game IDs:", sum)
+	power := solveDay2(lines...)
+	fmt.Println("(2) sum of power of minimum sets for all games:", power)
 }
