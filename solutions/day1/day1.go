@@ -3,9 +3,10 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
+
+	"github.com/advent-of-code-2023/internal/io"
 )
 
 var replacements = map[string]string{
@@ -71,14 +72,10 @@ func solve(calibrations ...string) int {
 }
 
 func main() {
-	data, err := os.ReadFile("input.txt")
+	lines, err := io.ReadLines("input.txt")
 	if err != nil {
 		panic(err)
 	}
-	s := strings.TrimSpace(string(data))
-	fmt.Println("read", len(data), "bytes")
-	calibrations := strings.Split(s, "\n")
-	fmt.Println("read", len(calibrations), "lines")
-	sum := solve(calibrations...)
+	sum := solve(lines...)
 	fmt.Println("sum:", sum)
 }
