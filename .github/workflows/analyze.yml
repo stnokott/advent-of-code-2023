@@ -18,7 +18,7 @@ jobs:
         uses: actions/setup-go@v2.1.3
         with:
           go-version: 1.21.4
-      - name: Run unit Tests
+      - name: Get coverage profile
         run: |
           go test -coverprofile cov.out ./...
       - name: SonarCloud Scan
