@@ -1,4 +1,5 @@
 // Package main runs the input for Day 2
+
 package main
 
 import (
@@ -26,6 +27,24 @@ func TestSetHasSubset(t *testing.T) {
 	}
 }
 
+func TestSetPower(t *testing.T) {
+	tests := []struct {
+		name string
+		s    Set
+		want int
+	}{
+		{"simple", Set{R: 5, G: 7, B: 12}, 5 * 7 * 12},
+		{"zero", Set{R: 5, G: 0, B: 12}, 0},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.s.Power(); got != tt.want {
+				t.Errorf("Set.Power() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestGameHasSubset(t *testing.T) {
 	tests := []struct {
 		name string
@@ -41,6 +60,24 @@ func TestGameHasSubset(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.g.HasSubset(tt.set); got != tt.want {
 				t.Errorf("Game.HasSubset() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGameMinPossibleSet(t *testing.T) {
+	tests := []struct {
+		name string
+		g    Game
+		want Set
+	}{
+		{"simple", Game{Sets: []Set{{R: 1, G: 1, B: 1}}}, Set{R: 1, G: 1, B: 1}},
+		{"multiple", Game{Sets: []Set{{R: 1, G: 2, B: 3}, {R: 10, G: 2, B: 5}, {R: 3, G: 8, B: 10}}}, Set{R: 10, G: 8, B: 10}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.g.MinPossibleSet(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Game.MinPossibleSet() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -174,6 +211,32 @@ func TestSolveDay1(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := solveDay1(tt.args.scenario, tt.args.games...); got != tt.want {
 				t.Errorf("solve() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSolveDay2(t *testing.T) {
+	tests := []struct {
+		name  string
+		games []string
+		want  int
+	}{
+		{"one game", []string{"Game 1: 9 red, 6 green, 5 blue"}, 9 * 6 * 5},
+		{
+			"multiple games",
+			[]string{
+				"Game 1: 10 green, 6 red, 5 blue",
+				"Game 2: 20 blue, 2 red, 8 green",
+				"Game 3: 9 green, 2 blue, 9 red; 10 blue, 11 green, 1 red",
+			},
+			10*6*5 + 20*2*8 + 10*11*9,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := solveDay2(tt.games...); got != tt.want {
+				t.Errorf("solveDay2() = %v, want %v", got, tt.want)
 			}
 		})
 	}
