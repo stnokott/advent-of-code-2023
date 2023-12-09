@@ -1,0 +1,6 @@
+I have
+multiple lines
+and an
+additional
+line terminator
+at the end
