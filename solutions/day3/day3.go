@@ -13,11 +13,13 @@ func isSymbol(c rune) bool {
 	return c != '.' && !isDigit(c)
 }
 
+// Schematic contains the input data as structured data
 type Schematic struct {
 	numRows, numCols int
 	lines            []string
 }
 
+// NewSchematic creates a new Schematic instance from the provided input string
 func NewSchematic(lines []string) *Schematic {
 	return &Schematic{
 		numRows: len(lines),
