@@ -2,11 +2,8 @@
 package main
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
-
-	"github.com/advent-of-code-2023/internal/io"
 )
 
 var replacements = map[string]string{
@@ -69,13 +66,4 @@ func solve(calibrations []string) int {
 		sum += extractNumber(s)
 	}
 	return sum
-}
-
-func main() {
-	lines, err := io.ReadLines("input.txt")
-	if err != nil {
-		panic(err)
-	}
-	sum := solve(lines)
-	fmt.Println("sum:", sum)
 }

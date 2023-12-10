@@ -2,10 +2,7 @@
 package main
 
 import (
-	"fmt"
 	"strconv"
-
-	"github.com/advent-of-code-2023/internal/io"
 )
 
 func isDigit(c rune) bool {
@@ -79,15 +76,4 @@ func (s *Schematic) solve() int {
 		}
 	}
 	return sum
-}
-
-func main() {
-	lines, err := io.ReadLines("input.txt")
-	if err != nil {
-		panic(err)
-	}
-
-	s := NewSchematic(lines)
-	solution := s.solve()
-	fmt.Println(solution)
 }
