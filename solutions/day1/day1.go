@@ -63,7 +63,7 @@ func extractNumber(s string) int {
 	return a*10 + b
 }
 
-func solve(calibrations ...string) int {
+func solve(calibrations []string) int {
 	sum := 0
 	for _, s := range calibrations {
 		sum += extractNumber(s)
@@ -76,6 +76,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	sum := solve(lines...)
+	sum := solve(lines)
 	fmt.Println("sum:", sum)
 }

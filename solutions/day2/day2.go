@@ -152,7 +152,7 @@ func solveDay1(scenario Set, games ...string) int {
 	return x
 }
 
-func solveDay2(games ...string) int {
+func solveDay2(games []string) int {
 	x := 0
 	for _, gameStr := range games {
 		game := NewGame(gameStr)
@@ -171,6 +171,6 @@ func main() {
 	}
 	sum := solveDay1(scenario, lines...)
 	fmt.Println("(1) sum of possible game IDs:", sum)
-	power := solveDay2(lines...)
+	power := solveDay2(lines)
 	fmt.Println("(2) sum of power of minimum sets for all games:", power)
 }
