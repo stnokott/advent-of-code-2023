@@ -28,6 +28,7 @@ func NewSchematic(lines []string) *Schematic {
 	}
 }
 
+// adjacencies defines dx,dy for 8-adjacency
 var adjacencies = [][]int{
 	{-1, 0},
 	{-1, -1},
@@ -51,27 +52,37 @@ func (s *Schematic) hasAdjacentSymbol(x, y int) bool {
 	return false
 }
 
+func (s *Schematic) processLine(l string, y int) int {
+	sum := 0
+	currentNumber := ""
+	currentNumberValid := false
+	for x, c := range l {
+		digit := isDigit(c)
+		if digit {
+			if !currentNumberValid && s.hasAdjacentSymbol(x, y) {
+				// mark current number valid if adjacent symbol is encountered
+				currentNumberValid = true
+			}
+			// append current character
+			currentNumber += string(c)
+		}
+		// wrap up current number if non-digit encountered or we're at the end of the line
+		if currentNumber != "" && (!digit || x == s.numCols-1) {
+			if currentNumberValid {
+				sum += str.MustAtoi(currentNumber)
+			}
+			// reset current number
+			currentNumber = ""
+			currentNumberValid = false
+		}
+	}
+	return sum
+}
+
 func (s *Schematic) solve() int {
 	sum := 0
 	for y, line := range s.lines {
-		currentNumber := ""
-		currentNumberValid := false
-		for x, c := range line {
-			digit := isDigit(c)
-			if digit {
-				if !currentNumberValid && s.hasAdjacentSymbol(x, y) {
-					currentNumberValid = true
-				}
-				currentNumber += string(c)
-			}
-			if currentNumber != "" && (!digit || x == s.numCols-1) {
-				if currentNumberValid {
-					sum += str.MustAtoi(currentNumber)
-				}
-				currentNumber = ""
-				currentNumberValid = false
-			}
-		}
+		sum += s.processLine(line, y)
 	}
 	return sum
 }
