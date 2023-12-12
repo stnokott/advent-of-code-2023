@@ -3,8 +3,9 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
+
+	"github.com/advent-of-code-2023/internal/str"
 )
 
 // Set contains a configuration for one set
@@ -55,10 +56,7 @@ func (g Game) MinPossibleSet() Set {
 func NewGame(s string) Game {
 	colonIndex := strings.IndexRune(s, ':')
 	// get id (string between first ' ' and ':')
-	id, err := strconv.Atoi(s[strings.IndexRune(s, ' ')+1 : colonIndex])
-	if err != nil {
-		panic(fmt.Sprintf("error extracting ID from '%s': %v", s, err))
-	}
+	id := str.MustAtoi(s[strings.IndexRune(s, ' ')+1 : colonIndex])
 	// get sets string (everything after colon+space)
 	setsString := s[colonIndex+2:]
 	sets := parseSets(setsString)
@@ -113,19 +111,16 @@ const (
 
 // SetColorNumberFrom sets the attribute of this set matching the provided string.
 // Example input: "3 blue"
-func parseColor(str string) (n int, c Color) {
+func parseColor(s string) (n int, c Color) {
 	var err error
 	defer func() {
 		if err != nil {
-			panic(fmt.Sprintf("error getting number from color string '%s': %v", str, err))
+			panic(fmt.Sprintf("error getting number from color string '%s': %v", s, err))
 		}
 	}()
-	parts := strings.Split(str, " ")
+	parts := strings.Split(s, " ")
 	numberStr, color := parts[0], parts[1]
-	n, err = strconv.Atoi(numberStr)
-	if err != nil {
-		return
-	}
+	n = str.MustAtoi(numberStr)
 	switch color {
 	case "red":
 		c = Red

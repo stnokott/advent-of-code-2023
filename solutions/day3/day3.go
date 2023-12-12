@@ -2,7 +2,7 @@
 package main
 
 import (
-	"strconv"
+	"github.com/advent-of-code-2023/internal/str"
 )
 
 func isDigit(c rune) bool {
@@ -66,11 +66,7 @@ func (s *Schematic) solve() int {
 			}
 			if currentNumber != "" && (!digit || x == s.numCols-1) {
 				if currentNumberValid {
-					num, err := strconv.Atoi(currentNumber)
-					if err != nil {
-						panic(err)
-					}
-					sum += num
+					sum += str.MustAtoi(currentNumber)
 				}
 				currentNumber = ""
 				currentNumberValid = false

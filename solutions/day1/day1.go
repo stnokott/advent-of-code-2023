@@ -2,8 +2,9 @@
 package main
 
 import (
-	"strconv"
 	"strings"
+
+	"github.com/advent-of-code-2023/internal/str"
 )
 
 var replacements = map[string]string{
@@ -46,10 +47,7 @@ func parseNumber(s string) int {
 		}
 	}
 	// convert to integer
-	n, err := strconv.Atoi(s)
-	if err != nil {
-		panic(err)
-	}
+	n := str.MustAtoi(s)
 	return n
 }
 
