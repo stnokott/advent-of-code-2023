@@ -7,7 +7,7 @@
 			"command": "go",
 			"args": [
 				"run",
-				"${workspaceFolder}/solutions/day${input:day}/day${input:day}.go"
+				"${workspaceFolder}/solutions/day${input:day}"
 			],
 			"options": {
 				"cwd": "${workspaceFolder}/solutions/day${input:day}"
