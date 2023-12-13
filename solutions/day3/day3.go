@@ -2,30 +2,81 @@
 package main
 
 import (
+	"slices"
+
 	"github.com/advent-of-code-2023/internal/str"
 )
 
-func isDigit(c rune) bool {
+func isDigit(c byte) bool {
 	return c >= '0' && c <= '9'
 }
 
-func isSymbol(c rune) bool {
-	return c != '.' && !isDigit(c)
+func isDot(c byte) bool {
+	return c == '.'
 }
 
-// Schematic contains the input data as structured data
-type Schematic struct {
-	numRows, numCols int
-	lines            []string
+// Element is one horizontal sequence of symbols of the same type.
+// This could be "123", but also "$%&"
+type Element struct {
+	s        string
+	xStart   int
+	isNumber bool
 }
 
-// NewSchematic creates a new Schematic instance from the provided input string
-func NewSchematic(lines []string) *Schematic {
-	return &Schematic{
-		numRows: len(lines),
-		numCols: len(lines[0]),
-		lines:   lines,
+func elementsInLine(line string) []*Element {
+	els := []*Element{}
+	// not using for..range because we want to modify x inside the loop
+	for x := 0; x < len(line); x++ {
+		if !isDot(line[x]) {
+			// are we parsing a number (or a symbol)?
+			isNumber := isDigit(line[x])
+			var s string
+			// iterate line from x until any of the following occurs:
+			// - end of line reached
+			// - different character type (digit/symbol) encountered
+			// - dot encountered
+			for i := x; i < len(line) && isDigit(line[i]) == isNumber && !isDot(line[i]); i++ {
+				// add each encountered character to element string
+				s += string(line[i])
+			}
+			el := &Element{
+				s:        s,
+				xStart:   x,
+				isNumber: isNumber,
+			}
+			els = append(els, el)
+			x += len(el.s) - 1
+		}
 	}
+	return els
+}
+
+// Schematic contains the input data as a 2D slice of Elements.
+// The elements are in the same row as they appear in the input string.
+// The elements in each row appear in the same order as in the input string.
+type Schematic [][]*Element
+
+// NewSchematic creates a new Schematic from the provided input string
+func NewSchematic(lines []string) Schematic {
+	rows := [][]*Element{}
+	for _, line := range lines {
+		row := elementsInLine(line)
+		rows = append(rows, row)
+	}
+	return rows
+}
+
+// elementAt returns the element at the specified input string coordinates or nil, if not found.
+func (s Schematic) elementAt(x, y int) *Element {
+	if y < 0 || y >= len(s) {
+		return nil
+	}
+	for _, el := range s[y] {
+		if x >= el.xStart && x < el.xStart+len(el.s) {
+			return el
+		}
+	}
+	return nil
 }
 
 // adjacencies defines dx,dy for 8-adjacency
@@ -40,49 +91,46 @@ var adjacencies = [][]int{
 	{-1, 1},
 }
 
-func (s *Schematic) hasAdjacentSymbol(x, y int) bool {
-	for _, adj := range adjacencies {
-		dx, dy := x+adj[0], y+adj[1]
-		if dx >= 0 && dx < s.numCols &&
-			dy >= 0 && dy < s.numRows &&
-			isSymbol(rune(s.lines[dy][dx])) {
-			return true
+func (s Schematic) getAdjacentElements(el *Element, y int) []*Element {
+	x := el.xStart
+	elements := []*Element{}
+	// iterate characters of element string
+	for dx := range el.s {
+		// iterate adjacencies
+		for _, adj := range adjacencies {
+			charX, charY := x+dx+adj[0], y+adj[1]
+			elAdj := s.elementAt(charX, charY)
+			// only add if valid element found that is not the source element
+			// and not already part of the result list
+			if elAdj != nil &&
+				elAdj != el &&
+				!slices.Contains(elements, elAdj) {
+				elements = append(elements, elAdj)
+			}
 		}
 	}
-	return false
+	return elements
 }
 
-func (s *Schematic) processLine(l string, y int) int {
+func (s Schematic) sumLine(y int) int {
 	sum := 0
-	currentNumber := ""
-	currentNumberValid := false
-	for x, c := range l {
-		digit := isDigit(c)
-		if digit {
-			if !currentNumberValid && s.hasAdjacentSymbol(x, y) {
-				// mark current number valid if adjacent symbol is encountered
-				currentNumberValid = true
-			}
-			// append current character
-			currentNumber += string(c)
+	for _, el := range s[y] {
+		if !el.isNumber {
+			continue
 		}
-		// wrap up current number if non-digit encountered or we're at the end of the line
-		if currentNumber != "" && (!digit || x == s.numCols-1) {
-			if currentNumberValid {
-				sum += str.MustAtoi(currentNumber)
-			}
-			// reset current number
-			currentNumber = ""
-			currentNumberValid = false
+		adjacentElements := s.getAdjacentElements(el, y)
+		if len(adjacentElements) > 0 {
+			sum += str.MustAtoi(el.s)
 		}
 	}
 	return sum
 }
 
-func (s *Schematic) solve() int {
+func solve(lines []string) int {
+	s := NewSchematic(lines)
 	sum := 0
-	for y, line := range s.lines {
-		sum += s.processLine(line, y)
+	for y := range s {
+		sum += s.sumLine(y)
 	}
 	return sum
 }
