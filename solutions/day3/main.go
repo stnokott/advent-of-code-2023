@@ -15,6 +15,8 @@ func main() {
 	}
 
 	s := NewSchematic(lines)
-	solution := solveParts(s)
-	fmt.Println(solution)
+	sumParts := solveParts(s)
+	fmt.Println("(1) sum of qualifying parts:", sumParts)
+	sumGears := solveGears(s)
+	fmt.Println("(2) sum of gear ratios:", sumGears)
 }

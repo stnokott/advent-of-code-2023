@@ -123,6 +123,7 @@ func (s Schematic) solve(elFunc func(el *Element, y int, s Schematic) int) int {
 }
 
 func sumPart(el *Element, y int, s Schematic) int {
+	// only numbers are considered "parts"
 	if !el.isNumber {
 		return 0
 	}
@@ -135,4 +136,22 @@ func sumPart(el *Element, y int, s Schematic) int {
 
 func solveParts(s Schematic) int {
 	return s.solve(sumPart)
+}
+
+func sumGear(el *Element, y int, s Schematic) int {
+	// only single "*" characters are considered "gears"
+	if el.s != "*" {
+		return 0
+	}
+	adjacentElements := s.getAdjacentElements(el, y)
+	if len(adjacentElements) == 2 &&
+		adjacentElements[0].isNumber &&
+		adjacentElements[1].isNumber {
+		return stringsx.MustAtoi(adjacentElements[0].s) * stringsx.MustAtoi(adjacentElements[1].s)
+	}
+	return 0
+}
+
+func solveGears(s Schematic) int {
+	return s.solve(sumGear)
 }

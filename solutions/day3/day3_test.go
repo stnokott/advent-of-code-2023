@@ -131,3 +131,25 @@ func TestSolveParts(t *testing.T) {
 		})
 	}
 }
+
+func TestSolveGears(t *testing.T) {
+	type args struct {
+		s Schematic
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{"simple", args{NewSchematic([]string{"123*456"})}, 123 * 456},
+		{"zero", args{NewSchematic([]string{"123*.456"})}, 0},
+		{"multirow", args{NewSchematic([]string{"467..114", "...*....", "..35...."})}, 467 * 35},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := solveGears(tt.args.s); got != tt.want {
+				t.Errorf("solveGears() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
