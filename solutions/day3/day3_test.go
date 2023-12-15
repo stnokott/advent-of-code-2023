@@ -14,12 +14,12 @@ func TestElementsInLine(t *testing.T) {
 		args args
 		want []*Element
 	}{
-		{"only_number", args{"123"}, []*Element{{s: "123", xStart: 0, isNumber: true}}},
-		{"number_and_dots", args{"..456.."}, []*Element{{s: "456", xStart: 2, isNumber: true}}},
-		{"number_and_symbols", args{".42$."}, []*Element{{s: "42", xStart: 1, isNumber: true}, {s: "$", xStart: 3, isNumber: false}}},
-		{"only_symbols", args{"$$%"}, []*Element{{s: "$$%", xStart: 0, isNumber: false}}},
-		{"symbols_and_dots", args{"....%&.."}, []*Element{{s: "%&", xStart: 4, isNumber: false}}},
-		{"symbols_and_numbers", args{".$%/999"}, []*Element{{s: "$%/", xStart: 1, isNumber: false}, {s: "999", xStart: 4, isNumber: true}}},
+		{"only_number", args{"123"}, []*Element{{s: "123", x0: 0, isNumber: true}}},
+		{"number_and_dots", args{"..456.."}, []*Element{{s: "456", x0: 2, isNumber: true}}},
+		{"number_and_symbols", args{".42$."}, []*Element{{s: "42", x0: 1, isNumber: true}, {s: "$", x0: 3, isNumber: false}}},
+		{"only_symbols", args{"$$%"}, []*Element{{s: "$$%", x0: 0, isNumber: false}}},
+		{"symbols_and_dots", args{"....%&.."}, []*Element{{s: "%&", x0: 4, isNumber: false}}},
+		{"symbols_and_numbers", args{".$%/999"}, []*Element{{s: "$%/", x0: 1, isNumber: false}, {s: "999", x0: 4, isNumber: true}}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -44,18 +44,18 @@ func TestNewSchematic(t *testing.T) {
 			args{[]string{"123", "456", "..57..$8", "789"}},
 			[][]*Element{
 				{
-					{s: "123", xStart: 0, isNumber: true},
+					{s: "123", x0: 0, isNumber: true},
 				},
 				{
-					{s: "456", xStart: 0, isNumber: true},
+					{s: "456", x0: 0, isNumber: true},
 				},
 				{
-					{s: "57", xStart: 2, isNumber: true},
-					{s: "$", xStart: 6, isNumber: false},
-					{s: "8", xStart: 7, isNumber: true},
+					{s: "57", x0: 2, isNumber: true},
+					{s: "$", x0: 6, isNumber: false},
+					{s: "8", x0: 7, isNumber: true},
 				},
 				{
-					{s: "789", xStart: 0, isNumber: true},
+					{s: "789", x0: 0, isNumber: true},
 				},
 			},
 		},

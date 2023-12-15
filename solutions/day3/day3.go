@@ -19,7 +19,7 @@ func isDot(c byte) bool {
 // This could be "123", but also "$%&"
 type Element struct {
 	s        string
-	xStart   int
+	x0       int
 	isNumber bool
 }
 
@@ -41,7 +41,7 @@ func elementsInLine(line string) []*Element {
 			}
 			el := &Element{
 				s:        s,
-				xStart:   x,
+				x0:       x,
 				isNumber: isNumber,
 			}
 			els = append(els, el)
@@ -72,7 +72,7 @@ func (s Schematic) elementAt(x, y int) *Element {
 		return nil
 	}
 	for _, el := range s[y] {
-		if x >= el.xStart && x < el.xStart+len(el.s) {
+		if x >= el.x0 && x < el.x0+len(el.s) {
 			return el
 		}
 	}
@@ -92,7 +92,7 @@ var adjacencies = [][]int{
 }
 
 func (s Schematic) getAdjacentElements(el *Element, y int) []*Element {
-	x := el.xStart
+	x := el.x0
 	elements := []*Element{}
 	// iterate characters of element string
 	for dx := range el.s {
