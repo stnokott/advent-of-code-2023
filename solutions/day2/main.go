@@ -5,13 +5,13 @@ package main
 import (
 	"fmt"
 
-	"github.com/advent-of-code-2023/internal/io"
+	iox "github.com/advent-of-code-2023/internal/io"
 )
 
 func main() {
 	scenario := Set{R: 12, G: 13, B: 14}
 
-	lines, err := io.ReadLines("input.txt")
+	lines, err := iox.ReadLines("input.txt")
 	if err != nil {
 		panic(err)
 	}

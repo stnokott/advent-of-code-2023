@@ -4,7 +4,7 @@ package main
 import (
 	"slices"
 
-	"github.com/advent-of-code-2023/internal/str"
+	stringsx "github.com/advent-of-code-2023/internal/strings"
 )
 
 func isDigit(c byte) bool {
@@ -120,7 +120,7 @@ func (s Schematic) sumLine(y int) int {
 		}
 		adjacentElements := s.getAdjacentElements(el, y)
 		if len(adjacentElements) > 0 {
-			sum += str.MustAtoi(el.s)
+			sum += stringsx.MustAtoi(el.s)
 		}
 	}
 	return sum

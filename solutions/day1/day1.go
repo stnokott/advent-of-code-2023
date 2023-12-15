@@ -4,7 +4,7 @@ package main
 import (
 	"strings"
 
-	"github.com/advent-of-code-2023/internal/str"
+	stringsx "github.com/advent-of-code-2023/internal/strings"
 )
 
 var replacements = map[string]string{
@@ -47,7 +47,7 @@ func parseNumber(s string) int {
 		}
 	}
 	// convert to integer
-	n := str.MustAtoi(s)
+	n := stringsx.MustAtoi(s)
 	return n
 }
 
