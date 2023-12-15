@@ -3,10 +3,9 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
-	"github.com/advent-of-code-2023/internal/io"
+	stringsx "github.com/advent-of-code-2023/internal/strings"
 )
 
 // Set contains a configuration for one set
@@ -57,10 +56,7 @@ func (g Game) MinPossibleSet() Set {
 func NewGame(s string) Game {
 	colonIndex := strings.IndexRune(s, ':')
 	// get id (string between first ' ' and ':')
-	id, err := strconv.Atoi(s[strings.IndexRune(s, ' ')+1 : colonIndex])
-	if err != nil {
-		panic(fmt.Sprintf("error extracting ID from '%s': %v", s, err))
-	}
+	id := stringsx.MustAtoi(s[strings.IndexRune(s, ' ')+1 : colonIndex])
 	// get sets string (everything after colon+space)
 	setsString := s[colonIndex+2:]
 	sets := parseSets(setsString)
@@ -115,19 +111,16 @@ const (
 
 // SetColorNumberFrom sets the attribute of this set matching the provided string.
 // Example input: "3 blue"
-func parseColor(str string) (n int, c Color) {
+func parseColor(s string) (n int, c Color) {
 	var err error
 	defer func() {
 		if err != nil {
-			panic(fmt.Sprintf("error getting number from color string '%s': %v", str, err))
+			panic(fmt.Sprintf("error getting number from color string '%s': %v", s, err))
 		}
 	}()
-	parts := strings.Split(str, " ")
+	parts := strings.Split(s, " ")
 	numberStr, color := parts[0], parts[1]
-	n, err = strconv.Atoi(numberStr)
-	if err != nil {
-		return
-	}
+	n = stringsx.MustAtoi(numberStr)
 	switch color {
 	case "red":
 		c = Red
@@ -152,7 +145,7 @@ func solveDay1(scenario Set, games ...string) int {
 	return x
 }
 
-func solveDay2(games ...string) int {
+func solveDay2(games []string) int {
 	x := 0
 	for _, gameStr := range games {
 		game := NewGame(gameStr)
@@ -160,17 +153,4 @@ func solveDay2(games ...string) int {
 		x += minSet.Power()
 	}
 	return x
-}
-
-func main() {
-	scenario := Set{R: 12, G: 13, B: 14}
-
-	lines, err := io.ReadLines("input.txt")
-	if err != nil {
-		panic(err)
-	}
-	sum := solveDay1(scenario, lines...)
-	fmt.Println("(1) sum of possible game IDs:", sum)
-	power := solveDay2(lines...)
-	fmt.Println("(2) sum of power of minimum sets for all games:", power)
 }

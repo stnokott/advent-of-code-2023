@@ -9,7 +9,7 @@
 			"type": "go",
 			"request": "launch",
 			"mode": "debug",
-			"program": "${workspaceFolder}/solutions/day${input:day}/day${input:day}.go"
+			"program": "${workspaceFolder}/solutions/day${input:day}"
 		}
 	],
 	"inputs": [

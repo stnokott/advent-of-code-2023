@@ -2,11 +2,9 @@
 package main
 
 import (
-	"fmt"
-	"strconv"
 	"strings"
 
-	"github.com/advent-of-code-2023/internal/io"
+	stringsx "github.com/advent-of-code-2023/internal/strings"
 )
 
 var replacements = map[string]string{
@@ -49,10 +47,7 @@ func parseNumber(s string) int {
 		}
 	}
 	// convert to integer
-	n, err := strconv.Atoi(s)
-	if err != nil {
-		panic(err)
-	}
+	n := stringsx.MustAtoi(s)
 	return n
 }
 
@@ -63,19 +58,10 @@ func extractNumber(s string) int {
 	return a*10 + b
 }
 
-func solve(calibrations ...string) int {
+func solve(calibrations []string) int {
 	sum := 0
 	for _, s := range calibrations {
 		sum += extractNumber(s)
 	}
 	return sum
-}
-
-func main() {
-	lines, err := io.ReadLines("input.txt")
-	if err != nil {
-		panic(err)
-	}
-	sum := solve(lines...)
-	fmt.Println("sum:", sum)
 }

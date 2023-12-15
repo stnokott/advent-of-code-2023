@@ -1,0 +1,5 @@
+I have
+multiple lines
+with
+windows
+line terminator

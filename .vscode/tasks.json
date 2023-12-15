@@ -2,12 +2,12 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Solve Day",
+			"label": "Solve",
 			"type": "process",
 			"command": "go",
 			"args": [
 				"run",
-				"${workspaceFolder}/solutions/day${input:day}/day${input:day}.go"
+				"${workspaceFolder}/solutions/day${input:day}"
 			],
 			"options": {
 				"cwd": "${workspaceFolder}/solutions/day${input:day}"
@@ -23,6 +23,33 @@
 				"focus": true,
 				"panel": "dedicated"
 			}
+		},
+		{
+			"label": "Test coverage file",
+			"hide": true,
+			"type": "process",
+			"command": "go",
+			"args": [
+				"test",
+				"-coverprofile=cov.out",
+				"-tags=test",
+				"./..."
+			],
+			"problemMatcher": "$go",
+		},
+		{
+			"label": "Test coverage report",
+			"type": "process",
+			"command": "go",
+			"args": [
+				"tool",
+				"cover",
+				"-html=cov.out"
+			],
+			"dependsOn": [
+				"Test coverage file"
+			],
+			"problemMatcher": "$go",
 		}
 	],
 	"inputs": [
