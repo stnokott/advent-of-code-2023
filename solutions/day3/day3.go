@@ -112,25 +112,27 @@ func (s Schematic) getAdjacentElements(el *Element, y int) []*Element {
 	return elements
 }
 
-func (s Schematic) sumLine(y int) int {
+func (s Schematic) solve(elFunc func(el *Element, y int, s Schematic) int) int {
 	sum := 0
-	for _, el := range s[y] {
-		if !el.isNumber {
-			continue
-		}
-		adjacentElements := s.getAdjacentElements(el, y)
-		if len(adjacentElements) > 0 {
-			sum += stringsx.MustAtoi(el.s)
+	for y := range s {
+		for _, el := range s[y] {
+			sum += elFunc(el, y, s)
 		}
 	}
 	return sum
 }
 
-func solve(lines []string) int {
-	s := NewSchematic(lines)
-	sum := 0
-	for y := range s {
-		sum += s.sumLine(y)
+func sumPart(el *Element, y int, s Schematic) int {
+	if !el.isNumber {
+		return 0
 	}
-	return sum
+	adjacentElements := s.getAdjacentElements(el, y)
+	if len(adjacentElements) > 0 {
+		return stringsx.MustAtoi(el.s)
+	}
+	return 0
+}
+
+func solveParts(s Schematic) int {
+	return s.solve(sumPart)
 }

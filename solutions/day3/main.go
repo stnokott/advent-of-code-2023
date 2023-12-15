@@ -14,6 +14,7 @@ func main() {
 		panic(err)
 	}
 
-	solution := solve(lines)
+	s := NewSchematic(lines)
+	solution := solveParts(s)
 	fmt.Println(solution)
 }

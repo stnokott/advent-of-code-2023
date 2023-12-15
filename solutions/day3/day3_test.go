@@ -109,64 +109,24 @@ func TestSchematicGetAdjacentElements(t *testing.T) {
 	}
 }
 
-func TestSchematicSumLine(t *testing.T) {
-	s := NewSchematic(
-		[]string{
-			"467..114..",
-			"...*......",
-			"..35..633.",
-			"......#...",
-			"617*......",
-			".....+.58.",
-			"..592.....",
-			"......755.",
-			"...$.*....",
-			".664.598..",
-		},
-	)
-
+func TestSolveParts(t *testing.T) {
 	type args struct {
-		y int
+		s Schematic
 	}
 	tests := []struct {
 		name string
 		args args
 		want int
 	}{
-		{"number", args{6}, 592},
-		{"multiple_numbers", args{0}, 467},
-		{"symbol", args{1}, 0},
-		{"multiple_symbols", args{8}, 0},
-		{"numbers_and_symbols_invalid", args{5}, 0},
-		{"numbers_and_symbols_valid", args{4}, 617},
+		{"simple", args{NewSchematic([]string{"..123..#456.7"})}, 456},
+		{"at_start", args{NewSchematic([]string{"123#..."})}, 123},
+		{"at_end", args{NewSchematic([]string{"...#123"})}, 123},
+		{"multirow", args{NewSchematic([]string{".123.", ".#.5$."})}, 128},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := s.sumLine(tt.args.y); got != tt.want {
-				t.Errorf("Schematic.sumLine() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestSolve(t *testing.T) {
-	type args struct {
-		lines []string
-	}
-	tests := []struct {
-		name string
-		args args
-		want int
-	}{
-		{"simple", args{[]string{"..123..#456.7"}}, 456},
-		{"at_start", args{[]string{"123#..."}}, 123},
-		{"at_end", args{[]string{"...#123"}}, 123},
-		{"multirow", args{[]string{".123.", ".#.5$."}}, 128},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := solve(tt.args.lines); got != tt.want {
-				t.Errorf("solve() = %v, want %v", got, tt.want)
+			if got := solveParts(tt.args.s); got != tt.want {
+				t.Errorf("solveParts() = %v, want %v", got, tt.want)
 			}
 		})
 	}
