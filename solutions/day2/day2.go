@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	stringsx "github.com/advent-of-code-2023/internal/strings"
+	"github.com/advent-of-code-2023/internal/stringsx"
 )
 
 // Set contains a configuration for one set

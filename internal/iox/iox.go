@@ -1,5 +1,5 @@
-// Package io provides utility functions for I/O operations
-package io
+// Package iox provides utility functions for I/O operations
+package iox
 
 import (
 	"fmt"
