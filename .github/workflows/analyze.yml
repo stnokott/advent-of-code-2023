@@ -15,7 +15,7 @@ jobs:
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: Setup Go
-        uses: actions/setup-go@v2.1.3
+        uses: actions/setup-go@v5.0.0
         with:
           go-version: 1.21.4
       - name: Get coverage profile
