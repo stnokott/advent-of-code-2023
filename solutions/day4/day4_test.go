@@ -1,4 +1,5 @@
 // Package main runs the input for Day 4
+
 package main
 
 import (
@@ -96,6 +97,33 @@ func TestSumCardPoints(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := sumCardPoints(tt.args.lines); got != tt.want {
 				t.Errorf("sumCardPoints() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestNumCardCopies(t *testing.T) {
+	type args struct {
+		lines []string
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{"no_copies", args{[]string{"Card 1: 12 | 34"}}, 1},
+		{"one_copy_only_card", args{[]string{"Card 1: 12 | 12"}}, 1},
+		{"multiple_cards", args{[]string{"Card 1: 72 22 | 72 22", "Card 2: 99 | 99", "Card 3: 36 | 36"}}, 7},
+		// *1*, 2, 3
+		// 1, *2*, 2, 3, 3
+		// 1, 2, *2*, 3, 3, 3
+		// 1, 2, 2, *3*, 3, 3, 3
+		// ... (no changes)
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := numCardCopies(tt.args.lines); got != tt.want {
+				t.Errorf("numCardCopies() = %v, want %v", got, tt.want)
 			}
 		})
 	}

@@ -36,11 +36,10 @@ func extractNumbers(s string) (wins []int, have []int) {
 	return
 }
 
-// cardPoints returns the point value of a card by parsing its string representation.
-func cardPoints(s string) int {
+func cardWins(s string) int {
 	wins, have := extractNumbers(s)
 	intersect := slicesx.Intersect(wins, have)
-	return cardPointAccu(len(intersect))
+	return len(intersect)
 }
 
 // cardPointAccu accumulates the points for a card.
@@ -56,7 +55,28 @@ func cardPointAccu(numWins int) int {
 func sumCardPoints(lines []string) int {
 	sum := 0
 	for _, line := range lines {
-		sum += cardPoints(line)
+		sum += cardPointAccu(cardWins(line))
 	}
+	return sum
+}
+
+func numCardCopies(lines []string) int {
+	// create slice of integers
+	// a value at index n represents the number of copies of card n+1.
+	copies := make([]int, len(lines))
+	for i := 0; i < len(copies); i++ {
+		copies[i] = 1
+	}
+
+	sum := 0
+
+	for i, line := range lines {
+		wins := cardWins(line)
+		for j := 1; j <= wins && i+j < len(copies); j++ {
+			copies[i+j] += copies[i]
+		}
+		sum += copies[i]
+	}
+
 	return sum
 }
