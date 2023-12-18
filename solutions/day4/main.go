@@ -13,6 +13,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	sum := solve(lines)
-	fmt.Println("sum:", sum)
+
+	sumPoints := sumCardPoints(lines)
+	fmt.Println("(1) sum of card points:", sumPoints)
+	numCopies := numCardCopies(lines)
+	fmt.Println("(2) num of cards after copying:", numCopies)
 }

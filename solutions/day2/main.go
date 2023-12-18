@@ -5,7 +5,7 @@ package main
 import (
 	"fmt"
 
-	iox "github.com/advent-of-code-2023/internal/io"
+	"github.com/advent-of-code-2023/internal/iox"
 )
 
 func main() {
