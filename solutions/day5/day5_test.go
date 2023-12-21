@@ -14,7 +14,7 @@ func TestAlmanachLowestLocation(t *testing.T) {
 		{
 			"simple",
 			&Almanach{
-				Seeds: []int{4, 18},
+				SeedRanges: []SeedRange{{4, 3}, {18, 2}},
 				Maps: []Map{
 					{
 						Name: "soil-to-fertilizer",
@@ -33,7 +33,7 @@ func TestAlmanachLowestLocation(t *testing.T) {
 					},
 				},
 			},
-			178,
+			19,
 		},
 	}
 	for _, tt := range tests {

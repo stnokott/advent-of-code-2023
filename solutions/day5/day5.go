@@ -11,14 +11,19 @@ import (
 func (a *Almanach) LowestLocation() int {
 	lowest := math.MaxInt
 
-	for _, seed := range a.Seeds {
-		dst := seed
-		// traverse maps
-		for _, mapping := range a.Maps {
-			dst = mapping.Go(dst)
+	for _, seedRange := range a.SeedRanges {
+		// note: could be parallelized for faster results when using pairs.
+		// would involve channels and early cancellation of goroutines, but it's not 21st and I'm just now solving day 5,
+		// so I will postpone that to another date.
+		for seedStart, seedOffset := seedRange[0], 0; seedOffset < seedRange[1]; seedOffset++ {
+			dst := seedStart + seedOffset
+			// traverse maps
+			for _, mapping := range a.Maps {
+				dst = mapping.Go(dst)
+			}
+			// last map traversed, so dst is now the location number
+			lowest = mathx.MinInt(lowest, dst)
 		}
-		// last map traversed, so dst is now the location number
-		lowest = mathx.MinInt(lowest, dst)
 	}
 	return lowest
 }

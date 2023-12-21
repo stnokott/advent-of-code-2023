@@ -8,13 +8,25 @@ import (
 
 // Almanach contains data for the whole almanach.
 type Almanach struct {
-	Seeds []int
-	Maps  []Map // Maps contains all maps of this almanach, sorted by appearance in the input string.
+	SeedRanges []SeedRange
+	Maps       []Map // Maps contains all maps of this almanach, sorted by appearance in the input string.
 }
 
+// SeedRange maps the start of a seed range and its length to the first and second value of an array respectively.
+type SeedRange [2]int
+
 // NewAlmanach constructs a new Almanach instance from the input lines.
-func NewAlmanach(lines []string) *Almanach {
-	seeds := parseSeeds(lines[0])
+//
+// useSeedPairs indicates whether two subsequent seed numbers in the first line should
+// be treated as seed range start and seed range length respectively.
+// If false, every seed value will simply be used as a regular seed number.
+func NewAlmanach(lines []string, useSeedPairs bool) *Almanach {
+	var seedRanges []SeedRange
+	if useSeedPairs {
+		seedRanges = parseSeedsAsPairs(lines[0])
+	} else {
+		seedRanges = parseSeedsAsValues(lines[0])
+	}
 	maps := make([]Map, 0)
 
 	// start iterating from third line (first map line)
@@ -31,8 +43,8 @@ func NewAlmanach(lines []string) *Almanach {
 	}
 
 	return &Almanach{
-		Seeds: seeds,
-		Maps:  maps,
+		SeedRanges: seedRanges,
+		Maps:       maps,
 	}
 }
 
@@ -48,6 +60,30 @@ func parseSeeds(s string) []int {
 		seeds[i] = stringsx.MustAtoi(ss)
 	}
 	return seeds
+}
+
+func parseSeedsAsValues(s string) []SeedRange {
+	seeds := parseSeeds(s)
+	pairs := make([]SeedRange, len(seeds))
+	for i := range pairs {
+		pairs[i] = SeedRange{
+			seeds[i],
+			1,
+		}
+	}
+	return pairs
+}
+
+func parseSeedsAsPairs(s string) []SeedRange {
+	seeds := parseSeeds(s)
+	pairs := make([]SeedRange, int(float64(len(seeds))/2))
+	for i := range pairs {
+		pairs[i] = SeedRange{
+			seeds[i*2],
+			seeds[i*2+1],
+		}
+	}
+	return pairs
 }
 
 // Map contains data about all range for one type of map.
