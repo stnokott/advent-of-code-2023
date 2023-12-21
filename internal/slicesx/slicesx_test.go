@@ -22,12 +22,15 @@ func TestIntersect(t *testing.T) {
 		{"one_element_equal", args{[]int{17}, []int{17}}, []int{17}},
 		{"one_element_unequal", args{[]int{17}, []int{99}}, []int{}},
 		{"equal_size", args{[]int{14, 7, 88, 95}, []int{96, 95, 14, 56}}, []int{14, 95}},
-		{"unequal_size", args{[]int{41, 48, 83, 86, 17}, []int{83, 86, 6, 31, 17, 9, 48, 53}}, []int{17, 48, 83, 86}},
+		{"unequal_size", args{[]int{83, 86, 6, 31, 17, 9, 48, 53}, []int{41, 48, 83, 86, 17}}, []int{17, 48, 83, 86}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := Intersect(tt.args.a, tt.args.b); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Intersect() = %v, want %v", got, tt.want)
+			}
+			if got := IntersectBrute(tt.args.a, tt.args.b); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("IntersectBrute() = %v, want %v", got, tt.want)
 			}
 		})
 	}
