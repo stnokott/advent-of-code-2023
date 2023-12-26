@@ -8,13 +8,13 @@ import (
 )
 
 // LowestLocation returns the lowest location number corresponding to any of the seeds.
+//
+// TODO: optimize by splitting ranges up into ranges which fall 100% under the next map.
+// see https://www.reddit.com/r/adventofcode/comments/18buwiz/comment/kc74e7z
 func (a *Almanach) LowestLocation() int {
 	lowest := math.MaxInt
 
 	for _, seedRange := range a.SeedRanges {
-		// note: could be parallelized for faster results when using pairs.
-		// would involve channels and early cancellation of goroutines, but it's not 21st and I'm just now solving day 5,
-		// so I will postpone that to another date.
 		for seedStart, seedOffset := seedRange[0], 0; seedOffset < seedRange[1]; seedOffset++ {
 			dst := seedStart + seedOffset
 			// traverse maps
