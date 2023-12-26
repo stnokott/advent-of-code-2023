@@ -80,7 +80,7 @@ func (s Schematic) elementAt(x, y int) *Element {
 }
 
 // adjacencies defines dx,dy for 8-adjacency
-var adjacencies = [][]int{
+var adjacencies = [][2]int{
 	{-1, 0},
 	{-1, -1},
 	{0, -1},
