@@ -2,6 +2,7 @@
 package main
 
 import (
+	"slices"
 	"strings"
 
 	"github.com/advent-of-code-2023/internal/slicesx"
@@ -42,10 +43,13 @@ func parse(line string) []int {
 }
 
 // SumPredictions returns the sum of each prediction for each line.
-func SumPredictions(lines []string) int {
+func SumPredictions(lines []string, reverse bool) int {
 	sum := 0
 	for _, line := range lines {
 		nums := parse(line)
+		if reverse {
+			slices.Reverse(nums)
+		}
 		sum += next(nums)
 	}
 	return sum

@@ -14,6 +14,8 @@ func main() {
 		panic(err)
 	}
 
-	sum := SumPredictions(lines)
+	sum := SumPredictions(lines, false)
 	fmt.Println("(1) sum of predictions:", sum)
+	sum = SumPredictions(lines, true)
+	fmt.Println("(1) sum of predictions reversed:", sum)
 }
