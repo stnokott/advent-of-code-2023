@@ -81,3 +81,21 @@ func intersectSizedBrute[S ~[]T, T cmp.Ordered](a S, b S) S {
 	}
 	return intersect
 }
+
+// All returns true if qualififerFunc returns true for all items in x.
+func All[S ~[]T, T any](x S, qualifierFunc func(T) bool) bool {
+	for _, el := range x {
+		if !qualifierFunc(el) {
+			return false
+		}
+	}
+	return true
+}
+
+func Reduce[S ~[]T, T any, V any](x S, reduceFunc func(acc V, val T) V, initial V) V {
+	result := initial
+	for _, el := range x {
+		result = reduceFunc(result, el)
+	}
+	return result
+}

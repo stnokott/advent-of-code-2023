@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestNewTree(t *testing.T) {
+func TestNewNetworkRegular(t *testing.T) {
 	// testing official samples
 	lines := []string{
 		"AAA = (BBB, CCC)",
@@ -17,38 +17,72 @@ func TestNewTree(t *testing.T) {
 		"GGG = (GGG, GGG)",
 		"ZZZ = (ZZZ, ZZZ)",
 	}
-	zzz := &Node{isEnd: true}
-	zzz.Left, zzz.Right = zzz, zzz
-	ggg := &Node{}
-	ggg.Left, ggg.Right = ggg, ggg
-	eee := &Node{}
-	eee.Left, eee.Right = eee, eee
-	ddd := &Node{}
-	ddd.Left, ddd.Right = ddd, ddd
-	ccc := &Node{Left: zzz, Right: ggg}
-	bbb := &Node{Left: ddd, Right: eee}
-	aaa := &Node{Left: bbb, Right: ccc}
-	want := aaa
 
-	if got := NewTree(lines); !reflect.DeepEqual(got, want) {
-		t.Errorf("NewTree() = %v, want %v", got, want)
+	want := Network{
+		net: map[string][2]string{
+			"AAA": {"BBB", "CCC"},
+			"BBB": {"DDD", "EEE"},
+			"CCC": {"ZZZ", "GGG"},
+			"DDD": {"DDD", "DDD"},
+			"EEE": {"EEE", "EEE"},
+			"GGG": {"GGG", "GGG"},
+			"ZZZ": {"ZZZ", "ZZZ"},
+		},
+		startNodes: []string{"AAA"},
+	}
+
+	if got := NewNetwork(lines, startNodeQualifierRegular); !reflect.DeepEqual(got, want) {
+		t.Errorf("NewNetwork() = %v, want %v", got, want)
 	}
 }
 
-func TestNodeWalk(t *testing.T) {
+func TestNewNetworkGhost(t *testing.T) {
+	// testing official samples
+	lines := []string{
+		"11A = (11B, XXX)",
+		"11B = (XXX, 11Z)",
+		"11Z = (11B, XXX)",
+		"22A = (22B, XXX)",
+		"22B = (22C, 22C)",
+		"22C = (22Z, 22Z)",
+		"22Z = (22B, 22B)",
+		"XXX = (XXX, XXX)",
+	}
+
+	want := Network{
+		net: map[string][2]string{
+			"11A": {"11B", "XXX"},
+			"11B": {"XXX", "11Z"},
+			"11Z": {"11B", "XXX"},
+			"22A": {"22B", "XXX"},
+			"22B": {"22C", "22C"},
+			"22C": {"22Z", "22Z"},
+			"22Z": {"22B", "22B"},
+			"XXX": {"XXX", "XXX"},
+		},
+		startNodes: []string{"11A", "22A"},
+	}
+
+	if got := NewNetwork(lines, startNodeQualifierGhost); !reflect.DeepEqual(got, want) {
+		t.Errorf("NewNetwork() = %v, want %v", got, want)
+	}
+}
+
+func TestNetworkWalk(t *testing.T) {
 	type args struct {
+		start        []string
 		instructions *instructions
-		steps        int
+		isEndFunc    func(string) bool
 	}
 	tests := []struct {
 		name string
-		n    *Node
+		net  Network
 		args args
 		want int
 	}{
 		{
-			"official 1",
-			NewTree([]string{
+			"official regular 1",
+			NewNetwork([]string{
 				"AAA = (BBB, CCC)",
 				"BBB = (DDD, EEE)",
 				"CCC = (ZZZ, GGG)",
@@ -56,30 +90,51 @@ func TestNodeWalk(t *testing.T) {
 				"EEE = (EEE, EEE)",
 				"GGG = (GGG, GGG)",
 				"ZZZ = (ZZZ, ZZZ)",
-			}),
+			}, startNodeQualifierRegular),
 			args{
+				[]string{"AAA"},
 				&instructions{S: "RL"},
-				0,
+				endNodeQualifierRegular,
 			},
 			2,
 		},
 		{
-			"official 2",
-			NewTree([]string{
+			"official regular 2",
+			NewNetwork([]string{
 				"AAA = (BBB, BBB)",
 				"BBB = (AAA, ZZZ)",
 				"ZZZ = (ZZZ, ZZZ)",
-			}),
+			}, startNodeQualifierRegular),
 			args{
+				[]string{"AAA"},
 				&instructions{S: "LLR"},
-				0,
+				endNodeQualifierRegular,
+			},
+			6,
+		},
+		{
+			"official ghost",
+			NewNetwork([]string{
+				"11A = (11B, XXX)",
+				"11B = (XXX, 11Z)",
+				"11Z = (11B, XXX)",
+				"22A = (22B, XXX)",
+				"22B = (22C, 22C)",
+				"22C = (22Z, 22Z)",
+				"22Z = (22B, 22B)",
+				"XXX = (XXX, XXX)",
+			}, startNodeQualifierGhost),
+			args{
+				[]string{"11A", "22A"},
+				&instructions{S: "LR"},
+				endNodeQualifierGhost,
 			},
 			6,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.n.walk(tt.args.instructions, tt.args.steps); got != tt.want {
+			if got := tt.net.Walk(tt.args.instructions, tt.args.isEndFunc); got != tt.want {
 				t.Errorf("Node.walk() = %v, want %v", got, tt.want)
 			}
 		})
@@ -89,6 +144,7 @@ func TestNodeWalk(t *testing.T) {
 func TestCalculateSteps(t *testing.T) {
 	type args struct {
 		lines []string
+		ghost bool
 	}
 	tests := []struct {
 		name string
@@ -96,35 +152,60 @@ func TestCalculateSteps(t *testing.T) {
 		want int
 	}{
 		{
-			"official 1",
-			args{[]string{
-				"RL",
-				"",
-				"AAA = (BBB, CCC)",
-				"BBB = (DDD, EEE)",
-				"CCC = (ZZZ, GGG)",
-				"DDD = (DDD, DDD)",
-				"EEE = (EEE, EEE)",
-				"GGG = (GGG, GGG)",
-				"ZZZ = (ZZZ, ZZZ)",
-			}},
+			"official regular 1",
+			args{
+				[]string{
+					"RL",
+					"",
+					"AAA = (BBB, CCC)",
+					"BBB = (DDD, EEE)",
+					"CCC = (ZZZ, GGG)",
+					"DDD = (DDD, DDD)",
+					"EEE = (EEE, EEE)",
+					"GGG = (GGG, GGG)",
+					"ZZZ = (ZZZ, ZZZ)",
+				},
+				false,
+			},
 			2,
 		},
 		{
-			"official 2",
-			args{[]string{
-				"LLR",
-				"",
-				"AAA = (BBB, BBB)",
-				"BBB = (AAA, ZZZ)",
-				"ZZZ = (ZZZ, ZZZ)",
-			}},
+			"official regular 2",
+			args{
+				[]string{
+					"LLR",
+					"",
+					"AAA = (BBB, BBB)",
+					"BBB = (AAA, ZZZ)",
+					"ZZZ = (ZZZ, ZZZ)",
+				},
+				false,
+			},
+			6,
+		},
+		{
+			"official ghost",
+			args{
+				[]string{
+					"LR",
+					"",
+					"11A = (11B, XXX)",
+					"11B = (XXX, 11Z)",
+					"11Z = (11B, XXX)",
+					"22A = (22B, XXX)",
+					"22B = (22C, 22C)",
+					"22C = (22Z, 22Z)",
+					"22Z = (22B, 22B)",
+					"XXX = (XXX, XXX)",
+				},
+				true,
+			},
 			6,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := calculateSteps(tt.args.lines); got != tt.want {
+			if got := calculateSteps(tt.args.lines, tt.args.ghost); got != tt.want {
 				t.Errorf("calculateSteps() = %v, want %v", got, tt.want)
 			}
 		})

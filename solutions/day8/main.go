@@ -14,6 +14,8 @@ func main() {
 		panic(err)
 	}
 
-	numSteps := calculateSteps(lines)
+	numSteps := calculateSteps(lines, false)
 	fmt.Println("(1) total steps taken to end:", numSteps)
+	numSteps = calculateSteps(lines, true)
+	fmt.Println("(2) total steps taken to end being a ghost:", numSteps)
 }
