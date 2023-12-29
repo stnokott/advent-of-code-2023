@@ -5,6 +5,7 @@ package slicesx
 import (
 	"math/rand"
 	"reflect"
+	"strconv"
 	"testing"
 )
 
@@ -127,6 +128,66 @@ func TestAll(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := All(tt.args.x, tt.args.qualifierFunc); got != tt.want {
 				t.Errorf("All() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestReduceString(t *testing.T) {
+	type args struct {
+		x          []int
+		reduceFunc func(acc string, val int) string
+		initial    string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			"append",
+			args{
+				[]int{1, 2, 3, 4, 5},
+				func(acc string, val int) string { return acc + strconv.Itoa(val) },
+				"x",
+			},
+			"x12345",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Reduce(tt.args.x, tt.args.reduceFunc, tt.args.initial); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Reduce() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestReduceInt(t *testing.T) {
+	type args struct {
+		x          []int
+		reduceFunc func(acc int, val int) int
+		initial    int
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{
+			"2n",
+			args{
+				[]int{1, 2, 3, 4, 5},
+				func(acc int, val int) int { return acc + 2*val },
+				99,
+			},
+			99 + 2*1 + 2*2 + 2*3 + 2*4 + 2*5,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Reduce(tt.args.x, tt.args.reduceFunc, tt.args.initial); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Reduce() = %v, want %v", got, tt.want)
 			}
 		})
 	}
