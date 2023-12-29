@@ -12,3 +12,14 @@ func MinInt(a int, b int) int {
 func MaxInt(a int, b int) int {
 	return int(math.Max(float64(a), float64(b)))
 }
+
+func GCD(a, b int) int {
+	for b != 0 {
+		a, b = b, a%b
+	}
+	return a
+}
+
+func LCM(a, b int) int {
+	return a / GCD(a, b) * b
+}

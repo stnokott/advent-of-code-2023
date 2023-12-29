@@ -1,4 +1,5 @@
 // Package slicesx provides high-level utility functions for slice/array operations
+
 package slicesx
 
 import (
@@ -106,3 +107,27 @@ func BenchmarkIntersect100(b *testing.B)      { benchmarkIntersect(100, Intersec
 func BenchmarkIntersectBrute100(b *testing.B) { benchmarkIntersect(100, IntersectBrute, b) }
 func BenchmarkIntersect250(b *testing.B)      { benchmarkIntersect(250, Intersect, b) }
 func BenchmarkIntersectBrute250(b *testing.B) { benchmarkIntersect(250, IntersectBrute, b) }
+
+func TestAll(t *testing.T) {
+	type args struct {
+		x             []int
+		qualifierFunc func(int) bool
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{"all true", args{[]int{1, 2, 3}, func(i int) bool { return i > 0 }}, true},
+		{"all false", args{[]int{1, 2, 3}, func(i int) bool { return i <= 0 }}, false},
+		{"one true", args{[]int{1, 2, 3}, func(i int) bool { return i <= 1 }}, false},
+		{"one false", args{[]int{1, 2, 3}, func(i int) bool { return i > 1 }}, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := All(tt.args.x, tt.args.qualifierFunc); got != tt.want {
+				t.Errorf("All() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
