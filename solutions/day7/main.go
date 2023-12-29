@@ -14,7 +14,10 @@ func main() {
 		panic(err)
 	}
 
-	hands := makeSortedHands(lines)
-	winnings := totalWinnings(hands)
+	g := NewGame(lines, false)
+	winnings := g.totalWinnings()
 	fmt.Println("(1) total winnings:", winnings)
+	g = NewGame(lines, true)
+	winnings = g.totalWinnings()
+	fmt.Println("(2) total winnings with joker wildcards:", winnings)
 }

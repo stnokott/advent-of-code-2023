@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestNewHand(t *testing.T) {
+func TestNewHandNoWildcards(t *testing.T) {
 	tests := []struct {
 		name string
 		args []string
@@ -23,7 +23,7 @@ func TestNewHand(t *testing.T) {
 	for _, tt := range tests {
 		for _, arg := range tt.args {
 			t.Run(tt.name+" "+arg, func(t *testing.T) {
-				if got := NewHand(arg, 0); !reflect.DeepEqual(got.t, tt.want) {
+				if got := NewHand(arg, 0, false); !reflect.DeepEqual(got.t, tt.want) {
 					t.Errorf("NewHand().t = %v, want %v", got.t, tt.want)
 				}
 			})
@@ -31,49 +31,76 @@ func TestNewHand(t *testing.T) {
 	}
 }
 
-func BenchmarkHandTypeFiveKind(b *testing.B) {
-	for n := 0; n < b.N; n++ {
-		NewHand("AAAAA", 0)
+func TestNewHandWithWildcards(t *testing.T) {
+	tests := []struct {
+		name string
+		args []string
+		want handType
+	}{
+		{"Five of a kind", []string{"AAAAA", "JJJJJ", "22222", "33333", "JJJ2J"}, HandFiveKind},
+		{"Four of a kind", []string{"AAAA8", "22322", "34333", "5TTTT", "45JJ4", "A2J2J", "KTJJT"}, HandFourKind},
+		{"Full House", []string{"TT8T8", "33222", "T4T44", "A2A2A", "A2A2J"}, HandFullHouse},
+		{"Three of a kind", []string{"18828", "43222", "T4A44", "6Q626", "6QJ2J"}, HandThreeKind},
+		{"Two pairs", []string{"TTQQ8", "2A2BB", "44TQT", "93932"}, HandTwoPair},
+		{"One pair", []string{"TT123", "33742", "TQTA4", "A2258", "A2J58"}, HandOnePair},
+		{"Highest card", []string{"12345", "A9257", "Q9A42"}, HandHighest},
+	}
+	for _, tt := range tests {
+		for _, arg := range tt.args {
+			t.Run(tt.name+" "+arg, func(t *testing.T) {
+				if got := NewHand(arg, 0, true); !reflect.DeepEqual(got.t, tt.want) {
+					t.Errorf("NewHand().t = %v, want %v", got.t, tt.want)
+				}
+			})
+		}
 	}
 }
 
-func BenchmarkHandTypeFourKind(b *testing.B) {
+func BenchmarkNewHandFiveKind(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		NewHand("34333", 0)
+		NewHand("AAAAA", 0, false)
 	}
 }
 
-func BenchmarkHandTypeFullHouse(b *testing.B) {
+func BenchmarkNewHandFourKind(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		NewHand("A2A2A", 0)
+		NewHand("34333", 0, false)
 	}
 }
 
-func BenchmarkHandTypeThreeKind(b *testing.B) {
+func BenchmarkNewHandFullHouse(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		NewHand("43222", 0)
+		NewHand("A2A2A", 0, false)
 	}
 }
 
-func BenchmarkHandTypeTwoPair(b *testing.B) {
+func BenchmarkNewHandThreeKind(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		NewHand("44TQT", 0)
+		NewHand("43222", 0, false)
 	}
 }
 
-func BenchmarkHandTypeHighest(b *testing.B) {
+func BenchmarkNewHandTwoPair(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		NewHand("AJ257", 0)
+		NewHand("44TQT", 0, false)
 	}
 }
 
-func BenchmarkHandTypeOnePair(b *testing.B) {
+func BenchmarkNewHandHighest(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		NewHand("A2258", 0)
+		NewHand("AJ257", 0, false)
 	}
 }
 
-func TestCompareHands(t *testing.T) {
+func BenchmarkNewHandOnePair(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		NewHand("A2258", 0, false)
+	}
+}
+
+func TestCompareHandsNoWildcard(t *testing.T) {
+	g := Game{jokerWildcard: false}
+
 	tests := []struct {
 		name string
 		x    Hand
@@ -90,67 +117,113 @@ func TestCompareHands(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := compareHands(tt.x, tt.y); got != tt.want {
+			fn := g.compareHandsFunc()
+			if got := fn(tt.x, tt.y); got != tt.want {
 				t.Errorf("CompareHands() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestMakeSortedHands(t *testing.T) {
+func TestCompareHandsWithWildcard(t *testing.T) {
+	g := Game{jokerWildcard: true}
+
+	tests := []struct {
+		name string
+		x    Hand
+		y    Hand
+		want int
+	}{
+		{"lower kind", NewHand("5JK39", 0, true), NewHand("TTAA3", 0, true), -1},
+		{"higher kind", NewHand("AA3AA", 0, true), NewHand("666AJ", 0, true), 1},
+		{"equal kind, all equal cards", NewHand("AAAAA", 0, true), NewHand("AAAAA", 0, true), 0},
+		{"equal kind, all lower cards", NewHand("22222", 0, true), NewHand("33333", 0, true), -1},
+		{"equal kind, all higher cards", NewHand("77777", 0, true), NewHand("33333", 0, true), 1},
+		{"equal kind, different card order lower", NewHand("AJJ5A", 0, true), NewHand("AJ5JA", 0, true), -1},
+		{"equal kind, different card order higher", NewHand("Q5666", 0, true), NewHand("Q5J65", 0, true), 1},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fn := g.compareHandsFunc()
+			if got := fn(tt.x, tt.y); got != tt.want {
+				t.Errorf("CompareHands() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestNewGame(t *testing.T) {
 	type args struct {
-		lines []string
+		lines         []string
+		jokerWildcard bool
 	}
 	tests := []struct {
 		name string
 		args args
-		want []Hand
+		want *Game
 	}{
 		{
-			"official",
-			args{[]string{"32T3K 765", "T55J5 684", "KK677 28", "KTJJT 220", "QQQJA 483"}},
-			[]Hand{
-				{"32T3K", HandOnePair, 765},
-				{"KTJJT", HandTwoPair, 220},
-				{"KK677", HandTwoPair, 28},
-				{"T55J5", HandThreeKind, 684},
-				{"QQQJA", HandThreeKind, 483},
+			"official no wildcards",
+			args{[]string{"32T3K 765", "T55J5 684", "KK677 28", "KTJJT 220", "QQQJA 483"}, false},
+			&Game{
+				hands: []Hand{
+					{"32T3K", HandOnePair, 765},
+					{"KTJJT", HandTwoPair, 220},
+					{"KK677", HandTwoPair, 28},
+					{"T55J5", HandThreeKind, 684},
+					{"QQQJA", HandThreeKind, 483},
+				},
+				jokerWildcard: false,
+			},
+		},
+		{
+			"official with wildcards",
+			args{[]string{"32T3K 765", "T55J5 684", "KK677 28", "KTJJT 220", "QQQJA 483"}, true},
+			&Game{
+				hands: []Hand{
+					{"32T3K", HandOnePair, 765},
+					{"KK677", HandTwoPair, 28},
+					{"T55J5", HandFourKind, 684},
+					{"QQQJA", HandFourKind, 483},
+					{"KTJJT", HandFourKind, 220},
+				},
+				jokerWildcard: true,
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := makeSortedHands(tt.args.lines); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("makeSortedHands() = %v, want %v", got, tt.want)
+			if got := NewGame(tt.args.lines, tt.args.jokerWildcard); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewGame() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
 func TestTotalWinnings(t *testing.T) {
-	type args struct {
-		sortedHands []Hand
-	}
 	tests := []struct {
 		name string
-		args args
+		g    *Game
 		want int
 	}{
 		{
 			"official",
-			args{[]Hand{
-				{"32T3K", HandOnePair, 765},
-				{"KTJJT", HandTwoPair, 220},
-				{"KK677", HandTwoPair, 28},
-				{"T55J5", HandThreeKind, 684},
-				{"QQQJA", HandThreeKind, 483},
-			}},
+			&Game{
+				hands: []Hand{
+					{"32T3K", HandOnePair, 765},
+					{"KTJJT", HandTwoPair, 220},
+					{"KK677", HandTwoPair, 28},
+					{"T55J5", HandThreeKind, 684},
+					{"QQQJA", HandThreeKind, 483},
+				},
+				jokerWildcard: false,
+			},
 			6440,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := totalWinnings(tt.args.sortedHands); got != tt.want {
+			if got := tt.g.totalWinnings(); got != tt.want {
 				t.Errorf("totalWinnings() = %v, want %v", got, tt.want)
 			}
 		})
