@@ -13,6 +13,7 @@ func MaxInt(a int, b int) int {
 	return int(math.Max(float64(a), float64(b)))
 }
 
+// GCD returns the greatest common divisor for a and b.
 func GCD(a, b int) int {
 	for b != 0 {
 		a, b = b, a%b
@@ -20,6 +21,7 @@ func GCD(a, b int) int {
 	return a
 }
 
+// LCM returns the lowest common multiplier for a and b.
 func LCM(a, b int) int {
 	return a / GCD(a, b) * b
 }

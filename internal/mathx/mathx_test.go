@@ -1,4 +1,5 @@
 // Package mathx provides utility functions for mathematics
+
 package mathx
 
 import (
@@ -49,6 +50,52 @@ func TestMaxInt(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := MaxInt(tt.args.a, tt.args.b); got != tt.want {
 				t.Errorf("MaxInt() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGCD(t *testing.T) {
+	type args struct {
+		a int
+		b int
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{"a == b", args{67, 67}, 67},
+		{"a < b", args{5, 10}, 5},
+		{"a > b", args{8, 6}, 2},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := GCD(tt.args.a, tt.args.b); got != tt.want {
+				t.Errorf("GCD() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestLCM(t *testing.T) {
+	type args struct {
+		a int
+		b int
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{"a == b", args{67, 67}, 67},
+		{"a < b", args{5, 10}, 10},
+		{"a > b", args{8, 6}, 24},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := LCM(tt.args.a, tt.args.b); got != tt.want {
+				t.Errorf("LCM() = %v, want %v", got, tt.want)
 			}
 		})
 	}

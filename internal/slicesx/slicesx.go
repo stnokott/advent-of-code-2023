@@ -92,6 +92,8 @@ func All[S ~[]T, T any](x S, qualifierFunc func(T) bool) bool {
 	return true
 }
 
+// Reduce reduces each element of x down to one output value by running the provided reduceFunc
+// over each element.
 func Reduce[S ~[]T, T any, V any](x S, reduceFunc func(acc V, val T) V, initial V) V {
 	result := initial
 	for _, el := range x {
