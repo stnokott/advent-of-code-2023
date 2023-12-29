@@ -4,7 +4,7 @@ package main
 import (
 	"strings"
 
-	"github.com/advent-of-code-2023/internal/stringsx"
+	"github.com/advent-of-code-2023/internal/strconvx"
 )
 
 var replacements = map[string]string{
@@ -47,7 +47,7 @@ func parseNumber(s string) int {
 		}
 	}
 	// convert to integer
-	n := stringsx.MustAtoi(s)
+	n := strconvx.MustAtoi(s)
 	return n
 }
 

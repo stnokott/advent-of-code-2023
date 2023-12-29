@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/advent-of-code-2023/internal/stringsx"
+	"github.com/advent-of-code-2023/internal/strconvx"
 )
 
 // Set contains a configuration for one set
@@ -56,7 +56,7 @@ func (g Game) MinPossibleSet() Set {
 func NewGame(s string) Game {
 	colonIndex := strings.IndexRune(s, ':')
 	// get id (string between first ' ' and ':')
-	id := stringsx.MustAtoi(s[strings.IndexRune(s, ' ')+1 : colonIndex])
+	id := strconvx.MustAtoi(s[strings.IndexRune(s, ' ')+1 : colonIndex])
 	// get sets string (everything after colon+space)
 	setsString := s[colonIndex+2:]
 	sets := parseSets(setsString)
@@ -120,7 +120,7 @@ func parseColor(s string) (n int, c Color) {
 	}()
 	parts := strings.Split(s, " ")
 	numberStr, color := parts[0], parts[1]
-	n = stringsx.MustAtoi(numberStr)
+	n = strconvx.MustAtoi(numberStr)
 	switch color {
 	case "red":
 		c = Red

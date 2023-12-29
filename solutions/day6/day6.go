@@ -5,7 +5,7 @@ import (
 	"math"
 	"regexp"
 
-	"github.com/advent-of-code-2023/internal/stringsx"
+	"github.com/advent-of-code-2023/internal/strconvx"
 )
 
 var regexNumbers = regexp.MustCompile(`(\d+)`)
@@ -17,8 +17,8 @@ func parseRaces(lines []string) []Race {
 	races := make([]Race, len(times))
 	for i := 0; i < len(races); i++ {
 		races[i] = Race{
-			time:     stringsx.MustAtoi(times[i]),
-			distance: stringsx.MustAtoi(distances[i]),
+			time:     strconvx.MustAtoi(times[i]),
+			distance: strconvx.MustAtoi(distances[i]),
 		}
 	}
 	return races
@@ -30,8 +30,8 @@ func parseRace(lines []string) Race {
 	time := regexNonNumbers.ReplaceAllString(lines[0], "")
 	distance := regexNonNumbers.ReplaceAllString(lines[1], "")
 	return Race{
-		time:     stringsx.MustAtoi(time),
-		distance: stringsx.MustAtoi(distance),
+		time:     strconvx.MustAtoi(time),
+		distance: strconvx.MustAtoi(distance),
 	}
 }
 

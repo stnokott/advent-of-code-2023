@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/advent-of-code-2023/internal/slicesx"
-	"github.com/advent-of-code-2023/internal/stringsx"
+	"github.com/advent-of-code-2023/internal/strconvx"
 )
 
 // parseNumbersString converts a string of space-separated integers to a slice of integers.
@@ -20,7 +20,7 @@ func parseNumbersString(s string) []int {
 	}
 	result := make([]int, len(numbers))
 	for i, n := range numbers {
-		result[i] = stringsx.MustAtoi(n)
+		result[i] = strconvx.MustAtoi(n)
 	}
 	return result
 }

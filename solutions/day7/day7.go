@@ -6,7 +6,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/advent-of-code-2023/internal/stringsx"
+	"github.com/advent-of-code-2023/internal/strconvx"
 )
 
 // handType is the type of hand represented by 5 cards.
@@ -108,7 +108,7 @@ func makeSortedHands(lines []string) []Hand {
 	hands := make([]Hand, len(lines))
 	for i, line := range lines {
 		split := strings.SplitN(line, " ", 2)
-		hands[i] = NewHand(split[0], stringsx.MustAtoi(split[1]))
+		hands[i] = NewHand(split[0], strconvx.MustAtoi(split[1]))
 	}
 
 	slices.SortFunc(hands, compareHands)
