@@ -3,7 +3,7 @@ package main
 import (
 	"strings"
 
-	"github.com/advent-of-code-2023/internal/stringsx"
+	"github.com/advent-of-code-2023/internal/strconvx"
 )
 
 // Almanach contains data for the whole almanach.
@@ -57,7 +57,7 @@ func parseSeeds(s string) []int {
 	seedsSplit := strings.Split(seedsStr, " ")
 	seeds := make([]int, len(seedsSplit))
 	for i, ss := range seedsSplit {
-		seeds[i] = stringsx.MustAtoi(ss)
+		seeds[i] = strconvx.MustAtoi(ss)
 	}
 	return seeds
 }
@@ -121,9 +121,9 @@ type Range struct {
 // Example output: *Range{SrcStart: 15, SrcEnd: 52, DstOffset: -15}
 func NewRange(s string) Range {
 	parts := strings.Split(s, " ") // len(parts) == 3
-	dstStart := stringsx.MustAtoi(parts[0])
-	srcStart := stringsx.MustAtoi(parts[1])
-	length := stringsx.MustAtoi(parts[2])
+	dstStart := strconvx.MustAtoi(parts[0])
+	srcStart := strconvx.MustAtoi(parts[1])
+	length := strconvx.MustAtoi(parts[2])
 	return Range{
 		SrcStart:  srcStart,
 		SrcEnd:    srcStart + length,

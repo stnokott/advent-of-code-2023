@@ -4,7 +4,7 @@ package main
 import (
 	"slices"
 
-	"github.com/advent-of-code-2023/internal/stringsx"
+	"github.com/advent-of-code-2023/internal/strconvx"
 )
 
 func isDigit(c byte) bool {
@@ -129,7 +129,7 @@ func sumPart(el *Element, y int, s Schematic) int {
 	}
 	adjacentElements := s.getAdjacentElements(el, y)
 	if len(adjacentElements) > 0 {
-		return stringsx.MustAtoi(el.s)
+		return strconvx.MustAtoi(el.s)
 	}
 	return 0
 }
@@ -147,7 +147,7 @@ func sumGear(el *Element, y int, s Schematic) int {
 	if len(adjacentElements) == 2 &&
 		adjacentElements[0].isNumber &&
 		adjacentElements[1].isNumber {
-		return stringsx.MustAtoi(adjacentElements[0].s) * stringsx.MustAtoi(adjacentElements[1].s)
+		return strconvx.MustAtoi(adjacentElements[0].s) * strconvx.MustAtoi(adjacentElements[1].s)
 	}
 	return 0
 }
