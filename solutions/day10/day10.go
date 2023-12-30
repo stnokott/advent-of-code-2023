@@ -1,7 +1,9 @@
 // Package main runs the input for Day 10
 package main
 
-import "math"
+import (
+	"math"
+)
 
 const (
 	ground = '.'
@@ -23,8 +25,18 @@ var pipes = map[rune][2]coord{
 	'F': {{1, 0}, {0, 1}},
 }
 
+type grid[T any] [][]T
+
+func (g grid[T]) inBounds(c coord) bool {
+	return c[1] >= 0 && c[0] >= 0 && c[1] < len(g) && c[0] < len(g[c[1]])
+}
+
+func (g grid[T]) at(c coord) T {
+	return g[c[1]][c[0]]
+}
+
 type sketch struct {
-	g     [][]rune
+	g     grid[rune]
 	start coord
 }
 
@@ -47,17 +59,8 @@ func newSketch(lines []string) sketch {
 	}
 }
 
-const outOfBounds rune = -1
-
-func (s sketch) at(c coord) rune {
-	if c[1] >= 0 && c[0] >= 0 && c[1] < len(s.g) && c[0] < len(s.g[c[1]]) {
-		return s.g[c[1]][c[0]]
-	}
-	return outOfBounds
-}
-
 func (s sketch) move(from coord, via coord) (to coord) {
-	delta := pipes[s.at(via)]
+	delta := pipes[s.g.at(via)]
 
 	to = via.add(delta[0])
 	// if delta[0] yields the same coordinates as the ones we're coming from,
@@ -68,44 +71,63 @@ func (s sketch) move(from coord, via coord) (to coord) {
 	return
 }
 
+// counter-clockwise for shoelace formula
 var directions = []coord{
-	{-1, -1},
-	{0, -1},
-	{1, -1},
-	{1, 0},
-	{1, 1},
-	{0, 1},
-	{-1, 1},
 	{-1, 0},
+	{-1, 1},
+	{0, 1},
+	{1, 1},
+	{1, 0},
+	{1, -1},
+	{0, -1},
+	{-1, -1},
 }
 
 // firstPipe finds the first pipe connected to the start pipe
 func (s sketch) firstPipe() coord {
 	for _, dir := range directions {
 		pipeCoord := s.start.add(dir)
-		if pipe := s.at(pipeCoord); pipe != outOfBounds {
-			pipeDirs := pipes[pipe]
-			for _, pipeDir := range pipeDirs {
-				if pipeDir[0]*-1 == dir[0] && pipeDir[1]*-1 == dir[1] {
-					return pipeCoord
-				}
+		if !s.g.inBounds(pipeCoord) {
+			continue
+		}
+		pipe := s.g.at(pipeCoord)
+		pipeDirs := pipes[pipe]
+		for _, pipeDir := range pipeDirs {
+			if pipeDir[0]*-1 == dir[0] && pipeDir[1]*-1 == dir[1] {
+				return pipeCoord
 			}
 		}
 	}
 	panic("no pipe connected to the start pipe")
 }
 
-func (s sketch) loopLength() int {
+func (s sketch) loop() []coord {
 	current := s.start
 	next := s.firstPipe()
 
-	length := 1
-	for ; next != s.start; length++ {
+	coords := []coord{current}
+
+	for next != s.start {
+		coords = append(coords, next)
 		current, next = next, s.move(current, next)
 	}
-	return length
+	return coords
 }
 
 func (s sketch) MaxDistance() int {
-	return int(math.Ceil(float64(s.loopLength()) / 2))
+	loop := s.loop()
+	return int(math.Ceil(float64(len(loop)) / 2))
+}
+
+func (s sketch) NumInnerCells() int {
+	loop := s.loop()
+
+	var sum int
+	for i := range loop {
+		sum += loop[i][0] * loop[(i+1)%len(loop)][1]
+		sum -= loop[(i+1)%len(loop)][0] * loop[i][1]
+	}
+
+	shoelaceSurface := math.Abs(float64(sum))/2 - float64(len(loop))/2 + 1
+	return int(math.Ceil(shoelaceSurface))
 }

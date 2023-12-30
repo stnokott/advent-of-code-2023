@@ -18,4 +18,6 @@ func main() {
 
 	maxDistance := s.MaxDistance()
 	fmt.Println("(1) max loop distance from starting point:", maxDistance)
+	countInner := s.NumInnerCells()
+	fmt.Println("(2) number of inner cells:", countInner)
 }
