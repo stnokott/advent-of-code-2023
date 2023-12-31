@@ -13,6 +13,11 @@ func MaxInt(a int, b int) int {
 	return int(math.Max(float64(a), float64(b)))
 }
 
+// AbsInt returns the absolute value of x as integer.
+func AbsInt(x int) int {
+	return int(math.Abs(float64(x)))
+}
+
 // GCD returns the greatest common divisor for a and b.
 func GCD(a, b int) int {
 	for b != 0 {

@@ -192,3 +192,30 @@ func TestReduceInt(t *testing.T) {
 		})
 	}
 }
+
+func TestRepeatRune(t *testing.T) {
+	r := '6'
+	n := 10
+	want := []rune{'6', '6', '6', '6', '6', '6', '6', '6', '6', '6'}
+	if got := Repeat(r, n); !reflect.DeepEqual(got, want) {
+		t.Errorf("Repeat() = %v, want %v", got, want)
+	}
+}
+
+func TestRepeatString(t *testing.T) {
+	s := "foo"
+	n := 5
+	want := []string{"foo", "foo", "foo", "foo", "foo"}
+	if got := Repeat(s, n); !reflect.DeepEqual(got, want) {
+		t.Errorf("Repeat() = %v, want %v", got, want)
+	}
+}
+
+func TestRepeatInt(t *testing.T) {
+	v := 8
+	n := 7
+	want := []int{8, 8, 8, 8, 8, 8, 8}
+	if got := Repeat(v, n); !reflect.DeepEqual(got, want) {
+		t.Errorf("Repeat() = %v, want %v", got, want)
+	}
+}
