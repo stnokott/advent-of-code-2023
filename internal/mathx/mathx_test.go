@@ -55,6 +55,28 @@ func TestMaxInt(t *testing.T) {
 	}
 }
 
+func TestAbsInt(t *testing.T) {
+	type args struct {
+		x int
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{"positive", args{6}, 6},
+		{"negative", args{-99}, 99},
+		{"zero", args{0}, 0},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := AbsInt(tt.args.x); got != tt.want {
+				t.Errorf("AbsInt() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestGCD(t *testing.T) {
 	type args struct {
 		a int

@@ -101,3 +101,12 @@ func Reduce[S ~[]T, T any, V any](x S, reduceFunc func(acc V, val T) V, initial 
 	}
 	return result
 }
+
+// Repeat returns a new slices with n items, with every item being v.
+func Repeat[T any](v T, n int) []T {
+	out := make([]T, n)
+	for i := range out {
+		out[i] = v
+	}
+	return out
+}
