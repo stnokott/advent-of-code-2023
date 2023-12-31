@@ -59,27 +59,28 @@ func TestSkyDist(t *testing.T) {
 	*/
 
 	type args struct {
-		a coord
-		b coord
+		a               coord
+		b               coord
+		emptyMultiplier int
 	}
 	tests := []struct {
 		name string
 		args args
 		want int
 	}{
-		{"diagonal", args{coord{1, 5}, coord{4, 9}}, 9},                // 5 to 9
-		{"diagonal reverse", args{coord{4, 9}, coord{1, 5}}, 9},        // 9 to 5
-		{"diagonal long distance", args{coord{0, 2}, coord{9, 6}}, 17}, // 3 to 6
-		{"vertical", args{coord{0, 2}, coord{1, 5}}, 5},                // 3 to 5
-		{"vertical reverse", args{coord{1, 5}, coord{0, 2}}, 5},        // 5 to 3
-		{"vertical straight", args{coord{0, 2}, coord{0, 9}}, 9},       // 3 to 8
-		{"horizontal", args{coord{1, 5}, coord{9, 6}}, 12},             // 5 to 6
-		{"horizontal reverse", args{coord{9, 6}, coord{1, 5}}, 12},     // 6 to 5
-		{"horizontal straight", args{coord{0, 9}, coord{4, 9}}, 5},     // 8 to 9
+		{"diagonal", args{coord{1, 5}, coord{4, 9}, 2}, 9},                // 5 to 9
+		{"diagonal reverse", args{coord{4, 9}, coord{1, 5}, 2}, 9},        // 9 to 5
+		{"diagonal long distance", args{coord{0, 2}, coord{9, 6}, 2}, 17}, // 3 to 6
+		{"vertical", args{coord{0, 2}, coord{1, 5}, 2}, 5},                // 3 to 5
+		{"vertical reverse", args{coord{1, 5}, coord{0, 2}, 2}, 5},        // 5 to 3
+		{"vertical straight", args{coord{0, 2}, coord{0, 9}, 2}, 9},       // 3 to 8
+		{"horizontal", args{coord{1, 5}, coord{9, 6}, 2}, 12},             // 5 to 6
+		{"horizontal reverse", args{coord{9, 6}, coord{1, 5}, 2}, 12},     // 6 to 5
+		{"horizontal straight", args{coord{0, 9}, coord{4, 9}, 2}, 5},     // 8 to 9
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := sky.dist(tt.args.a, tt.args.b); got != tt.want {
+			if got := sky.dist(tt.args.a, tt.args.b, tt.args.emptyMultiplier); got != tt.want {
 				t.Errorf("dist() = %v, want %v", got, tt.want)
 			}
 		})
@@ -144,9 +145,13 @@ func TestSkyMakePairs(t *testing.T) {
 }
 
 func TestSkySumDistances(t *testing.T) {
+	type args struct {
+		emptyMultiplier int
+	}
 	tests := []struct {
 		name string
 		s    Sky
+		args args
 		want int
 	}{
 		{
@@ -163,12 +168,47 @@ func TestSkySumDistances(t *testing.T) {
 				".......#..",
 				"#...#.....",
 			}),
+			args{emptyMultiplier: 2},
 			374,
+		},
+		{
+			"official part 2 mult 10",
+			NewSky([]string{
+				"...#......",
+				".......#..",
+				"#.........",
+				"..........",
+				"......#...",
+				".#........",
+				".........#",
+				"..........",
+				".......#..",
+				"#...#.....",
+			}),
+			args{emptyMultiplier: 10},
+			1030,
+		},
+		{
+			"official part 2 mult 100",
+			NewSky([]string{
+				"...#......",
+				".......#..",
+				"#.........",
+				"..........",
+				"......#...",
+				".#........",
+				".........#",
+				"..........",
+				".......#..",
+				"#...#.....",
+			}),
+			args{emptyMultiplier: 100},
+			8410,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.s.SumDistances(); got != tt.want {
+			if got := tt.s.SumDistances(tt.args.emptyMultiplier); got != tt.want {
 				t.Errorf("sky.SumDistances() = %v, want %v", got, tt.want)
 			}
 		})

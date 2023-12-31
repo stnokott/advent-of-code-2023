@@ -39,7 +39,7 @@ func NewSky(lines []string) Sky {
 	}
 }
 
-func (s Sky) dist(a coord, b coord) int {
+func (s Sky) dist(a coord, b coord, emptyMultiplier int) int {
 	expX := 0
 	for x := mathx.MinInt(a[0], b[0]); x <= mathx.MaxInt(a[0], b[0]); x++ {
 		if s.colsEmpty[x] {
@@ -54,8 +54,8 @@ func (s Sky) dist(a coord, b coord) int {
 	}
 
 	// no diagonal movement, so we move as if on stair steps
-	dx := mathx.AbsInt(a[0]-b[0]) + expX
-	dy := mathx.AbsInt(a[1]-b[1]) + expY
+	dx := mathx.AbsInt(a[0]-b[0]) + expX*(emptyMultiplier-1)
+	dy := mathx.AbsInt(a[1]-b[1]) + expY*(emptyMultiplier-1)
 	return dx + dy
 }
 
@@ -70,11 +70,11 @@ func (s Sky) makePairs() [][2]coord {
 }
 
 // SumDistances calculates the sum of minimum distances between all distinct, non-repeating galaxy pairs.
-func (s Sky) SumDistances() int {
+func (s Sky) SumDistances(emptyMultiplier int) int {
 	pairs := s.makePairs()
 	sum := 0
 	for _, pair := range pairs {
-		sum += s.dist(pair[0], pair[1])
+		sum += s.dist(pair[0], pair[1], emptyMultiplier)
 	}
 	return sum
 }

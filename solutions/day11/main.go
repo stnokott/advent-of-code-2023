@@ -16,6 +16,8 @@ func main() {
 
 	s := NewSky(lines)
 
-	sumDistances := s.SumDistances()
-	fmt.Println("(1) sum of minimum distances between galaxy pairs:", sumDistances)
+	sumDistances := s.SumDistances(2)
+	fmt.Println("(1) sum of minimum distances between galaxy pairs (mult=2):", sumDistances)
+	sumDistances = s.SumDistances(1000000)
+	fmt.Println("(1) sum of minimum distances between galaxy pairs (mult=1000000):", sumDistances)
 }
