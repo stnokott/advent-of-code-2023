@@ -110,3 +110,19 @@ func Repeat[T any](v T, n int) []T {
 	}
 	return out
 }
+
+// Split splits the input slice at sep.
+//
+// Works like strings.Split, just with slices.
+func Split(input []string, sep string) [][]string {
+	out := make([][]string, 0, 1)
+	var iStart int
+	for i, s := range input {
+		if s == sep {
+			out = append(out, input[iStart:i])
+			iStart = i + 1
+		}
+	}
+	out = append(out, input[iStart:])
+	return out
+}

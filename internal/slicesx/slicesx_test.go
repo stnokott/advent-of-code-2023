@@ -219,3 +219,75 @@ func TestRepeatInt(t *testing.T) {
 		t.Errorf("Repeat() = %v, want %v", got, want)
 	}
 }
+
+func TestSplit(t *testing.T) {
+	type args struct {
+		input []string
+		sep   string
+	}
+	tests := []struct {
+		name string
+		args args
+		want [][]string
+	}{
+		{
+			"no sep",
+			args{
+				[]string{
+					"abc",
+					"def",
+					"ghi",
+				},
+				"---",
+			},
+			[][]string{
+				{"abc", "def", "ghi"},
+			},
+		},
+		{
+			"small",
+			args{
+				[]string{
+					"---",
+					"abc",
+					"def",
+					"ghi",
+					"---",
+					"jkl",
+					"---",
+				},
+				"---",
+			},
+			[][]string{
+				{},
+				{"abc", "def", "ghi"},
+				{"jkl"},
+				{},
+			},
+		},
+		{
+			"empty string sep",
+			args{
+				[]string{
+					"abc",
+					"def",
+					"",
+					"ghi",
+					"jkl",
+				},
+				"",
+			},
+			[][]string{
+				{"abc", "def"},
+				{"ghi", "jkl"},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Split(tt.args.input, tt.args.sep); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Split() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
